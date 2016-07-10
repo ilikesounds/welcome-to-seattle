@@ -39,8 +39,7 @@ var questionObj = [{
 }]
 
 questionObj.toHtml = function(ques) {
-  var source = $('#question-template').html();
-  var template = Handlebars.compile(source);
+  var template = Handlebars.compile($('#question-template').html());
   var store = template(ques);
   return store;
 }
@@ -55,7 +54,7 @@ ques.forEach(function(el) {
 
 function scoreAssignment(neighborhood) {
   for (var i = 0; i < userInputArray.length; i++) {
-    if (destringify(userInputArray[i].value) === neighborhood.characteristics[i].value) {
+    if (userInputArray[i].value === neighborhood.characteristics[i].value) {
       neighborhood.score++;
     }
   }
@@ -67,18 +66,9 @@ function removeForm() {
 
 function assignNeighborhoodScores() {
   for (var i = 0; i < neighborhoodArray.length; i++) {
-    scoreAssignment(neighborhoodArray[i]);
     console.log(neighborhoodArray[i]);
+    scoreAssignment(neighborhoodArray[i]);
   }
-}
-
-function destringify(string) {
-  if (string === 'true') {
-    string = true;
-  } else if (string === 'false') {
-    string = false;
-  }
-  return string;
 }
 
 function sortResults() {
@@ -97,8 +87,8 @@ function processUserAnswers(event) {
   event.preventDefault();
   console.log(event.target);
 
-  for (var i = 0; i < questionArray.length; i++) {
-    var questionName = questionArray[i].name;
+  for (var i = 0; i < ques.length; i++) {
+    var questionName = ques[i].name;
     var userAnswer = event.target[questionName].value;
     console.log(userAnswer);
     createUserArray(questionName, userAnswer);
@@ -110,19 +100,15 @@ function processUserAnswers(event) {
 }
 //CREATE RANKED LIST AFTER FORM RESULTS
 function appendResultList() {
-  var formResults = document.getElementById('form-results');
-  var resultsHeader = document.createElement('h2');
-  resultsHeader.textContent = 'Here are the neighborhoods that meet your needs in order from best to worst:';
-  formResults.appendChild(resultsHeader);
-  var formResultsOL = document.createElement('ol');
-  formResults.appendChild(formResultsOL);
+  var $h2 = $('<h2>').text('Here are the neighborhoods that meet your needs in order from best to worst:');
+  $($h2).appendTo('#form-results');
+  $("<ol></ol>").appendTo('#form-results');
   for (i = 0; i < neighborhoodArray.length; i++) {
-    var formResultsLI = document.createElement('li');
-    formResultsOL.appendChild(formResultsLI);
-    var aTag = document.createElement('a');
-    aTag.setAttribute('href', 'neighborhood.html?id=' + neighborhoodArray[i].pageLink);
-    aTag.innerHTML = neighborhoodArray[i].name;
-    formResultsLI.appendChild(aTag);
+    var $a = $("<a>", {
+      "href": 'neighborhood.html?id=' + neighborhoodArray[i].pageLink
+    }).text(neighborhoodArray[i].name);
+    $('#form-results > ol').append('<li>');
+    $('ol > li').last().append($a);
   }
 }
 

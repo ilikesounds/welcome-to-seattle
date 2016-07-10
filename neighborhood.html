@@ -3,9 +3,28 @@
 <head>
   <title>Welcome to Seattle</title>
   <link href="css/normalize.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Fira+Sans' rel='stylesheet' type='text/css'>
   <link href="css/style.css" rel="stylesheet" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script id="neighborhood-template" type="text/x-handlebars-template">
+    <section class="neighborhood-name" id="neighborhood-name">
+      <h1>{{name}}</h1>
+    </section>
+    <section class="info-box" id="info-box">
+      <section>{{blurb}}</section>
+      <img src="{{photo}}">
+      <ul>
+      {{#each factsList}}
+        <li>{{this.factsList}}</li>
+      </ul>
+    </section>
+    <div class="google-map" id="google-map">
+      <iframe src="{{map}}">
+      </iframe>
+    </div>
+  </script>
 </head>
 <body class="subpage neighborhood-page">
   <header>
