@@ -1,21 +1,7 @@
-
 var currentNeighborhood;
 var commentsArray = [];
 
-
-
-// function Neighborhood (opts) {
-//   this.name = opts.value;
-//   this.characteristics = [];
-//   this.map = '';
-//   this.blurb = '';
-//   this.score = 0;
-//   this.pageLink = '';
-//   this.factsList = [];
-//   this.photo = '';
-// }
-
-function createUserArray(characteristic, value){
+function createUserArray(characteristic, value) {
   var userChar = {
     characteristic: characteristic,
     value: value
@@ -23,59 +9,12 @@ function createUserArray(characteristic, value){
   userInputArray.push(userChar);
 }
 
-//QUERYSTRING STUFF
-//based on css-tricks.com/snippets/javascript/get-url-variables/
-function getQueryVariable(variable)
-{
-  var query = window.location.search.substring(1);
-  var vars = query.split('&');
-  var key, value;
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split('=');
-    key = pair[0];
-    value = pair[1];
-    console.log('key: ' + key);
-    if( key === 'id' ){
-      for (var i = 0; i < neighborhoodArray.length; i++){
-        if (neighborhoodArray[i].pageLink === pair[1]){
-          displayNeighborhood(neighborhoodArray[i]);
-          return;
-        }
-      }
-    }
-  }
-}
+function displayNeighborhood(neighborhood) {
 
-var neighborhoodCheck = document.getElementById('neighborhood-name');
-if (neighborhoodCheck) {
-  getQueryVariable('id');
-}
-
-//DISPLAY PAGE CONTENT FOR NEIGHBORHOOD.HTML
-function displayNeighborhood(neighborhood){
+  var template = Handlebars.compile($('#neighborhood-template').html());
+  var html = template(neighborhoodArray);
 
   fetchCommentsFromLocal();
-
-  var title = document.createElement('h1');
-  title.textContent = neighborhood.name;
-  document.getElementById('neighborhood-name').appendChild(title);
-
-  var mapImage = document.createElement('iframe');
-  mapImage.src = neighborhood.map;
-  document.getElementById('google-map').appendChild(mapImage);
-
-  var blurbContent = document.createElement('section');
-  blurbContent.textContent = neighborhood.blurb;
-  document.getElementById('info-box').appendChild(blurbContent);
-
-  currentNeighborhood = neighborhood.pageLink;
-
-  var neighborhoodPhoto = document.createElement('img');
-  neighborhoodPhoto.setAttribute('src', neighborhood.photo);
-  document.getElementById('info-box').appendChild(neighborhoodPhoto);
-
-  var factsContent = document.createElement('ul');
-  document.getElementById('info-box').appendChild(factsContent);
 
   for (var i = 0; i < commentsArray.length; i++) {
     var userComment = document.createElement('p');
@@ -88,42 +27,22 @@ function displayNeighborhood(neighborhood){
     }
   }
 
-  for (var i = 0; i < neighborhood.factsList.length; i++){
+  for (var i = 0; i < neighborhood.factsList.length; i++) {
     var facts = document.createElement('li');
     facts.textContent = neighborhood.factsList[i];
     factsContent.appendChild(facts);
   }
 }
-//rewrite this!!!!
-// function displayPlaces() {
-//   var places = document.getElementById('places-list');
-//   var resultsHeader = document.createElement('h2');
-//   resultsHeader.textContent = 'List of Neighborhoods';
-//   places.appendChild(resultsHeader);
-//   var formResultsOL = document.createElement('ul');
-//   places.appendChild(formResultsOL);
-//   for (i = 0; i < neighborhoodArray.length; i++) {
-//     var formResultsLI = document.createElement('li');
-//     formResultsOL.appendChild(formResultsLI);
-//     var aTag = document.createElement('a');
-//     aTag.setAttribute('href', 'neighborhood.html?id=' + neighborhoodArray[i].pageLink);
-//     aTag.innerHTML = neighborhoodArray[i].name;
-//     formResultsLI.appendChild(aTag);
-//   };
-// }
 
-
-function displayPlaces(){
-  var neighborhoodList = $('<ul/>');
+function displayPlaces() {
   var neighborhoodArr = JSON.parse(localStorage.getItem('neighborhoods'));
-  //console.log(neighborhoodArr);
-  neighborhoodArr.forEach(function (elem){
-    var neighorhoodElement = $('<li/>',{
+  $('#places-list').append('<ul/>');
+  neighborhoodArr.forEach(function(elem) {
+    var neighorhoodElement = $('<li/>', {
       text: elem.name
     })
-    neighborhoodList.append(neighorhoodElement);
+    $('#places-list ul').append(neighorhoodElement);
   })
-  $('#places-list').append(neighborhoodList);
 }
 
 //display page content for places.html - navigation backup page
@@ -133,10 +52,10 @@ if (placesCheck) {
 }
 
 //EVENT LISTENER FOR COMMENTS
-var commentForm = document.getElementById('neighborhood-comment-form');
-commentForm.addEventListener('submit', processComment);
+// var commentForm = document.getElementById('neighborhood-comment-form');
+// commentForm.addEventListener('submit', processComment);
 
-function processComment(event){
+function processComment(event) {
   event.preventDefault();
   var userComment = document.createElement('p');
   userComment.setAttribute('class', currentNeighborhood);
@@ -158,17 +77,28 @@ function processComment(event){
   commentForm.reset();
 }
 
-function saveCommentsToLocal(){
+function saveCommentsToLocal() {
   localStorage.setItem('savedComments', JSON.stringify(commentsArray));
 }
 
-function fetchCommentsFromLocal(){
+function fetchCommentsFromLocal() {
   var savedComments = JSON.parse(localStorage.getItem('savedComments'));
-  if (savedComments){
+  if (savedComments) {
     console.log('User has comments from last time.');
-    commentsArray = savedComments; }
+    commentsArray = savedComments;
+  }
 }
 
+function processUserAnswers(event) {
+  event.preventDefault();
+  console.log(event.target);
+
+  for (var i = 0; i < ques.length; i++) {
+    var questionName = ques[i].name;
+    var userAnswer = event.target[questionName].value;
+    createUserArray(questionName, userAnswer);
+  }
+}
 //EVENT LISTENER FOR FORM PAGE
 var getUserAnswers = document.getElementById('help-me-choose-form');
 getUserAnswers.addEventListener('submit', processUserAnswers);
